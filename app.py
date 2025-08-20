@@ -25,7 +25,7 @@ nltk.download('wordnet', download_dir=nltk_data_path)
 nltk.download('omw-1.4', download_dir=nltk_data_path)
 
 # --- Streamlit config ---
-st.set_page_config(page_title="Find Similar Words", layout="centered")
+st.set_page_config(page_title="Find Similar Words!!!", layout="centered")
 
 # --- First-load spinner rerun ---
 if "first_load" not in st.session_state:
