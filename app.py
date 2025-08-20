@@ -1,6 +1,7 @@
 # --- Imports ---
 import streamlit as st
 import numpy as np
+import requests
 from pathlib import Path
 from numpy.linalg import norm
 import random
@@ -30,20 +31,26 @@ common_words = load_common_words()
 
 # --- Load GloVe embeddings ---
 @st.cache_resource
-def load_glove_embeddings(file_path):
+def load_glove_embeddings(url):
     embeddings = {}
-    with open(file_path, 'r', encoding='utf-8') as f:
-        for line in f:
-            parts = line.strip().split()
-            word = parts[0]
+    response = requests.get(url)
+    lines = response.text.strip().split('\n')
+    for line in lines:
+        parts = line.strip().split()
+        if len(parts) < 51:  # 1 word + 50 dimensions
+            continue  # Skip lines that aren't valid embeddings
+        word = parts[0]
+        try:
             vector = np.array(parts[1:], dtype=np.float32)
             embeddings[word] = vector
+        except ValueError:
+            continue  # Skip any line where conversion to float fails
     return embeddings
 
+glove_url = st.secrets["glove_url"]
+
 with st.spinner("🔄 Loading word embeddings..."):
-    base_path = Path("C:/Users/drumw/Dev Projects/thesaurus/glove.6B")
-    file_path = base_path / "glove.6B.100d.txt"
-    glove = load_glove_embeddings(file_path)
+    glove = load_glove_embeddings(glove_url)
 
 # --- Clear first load flag after load ---
 if st.session_state.get("first_load"):
