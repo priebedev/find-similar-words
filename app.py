@@ -7,6 +7,20 @@ from numpy.linalg import norm
 import random
 import nltk
 from nltk.corpus import stopwords
+import os
+
+# Set NLTK data path to a temp folder that Streamlit Cloud can write to
+nltk_data_path = "/tmp/nltk_data"
+os.makedirs(nltk_data_path, exist_ok=True)
+nltk.data.path.append(nltk_data_path)
+
+# Download required NLTK models to that folder
+nltk.download('stopwords', download_dir=nltk_data_path)
+nltk.download('averaged_perceptron_tagger', download_dir=nltk_data_path)
+nltk.download('punkt', download_dir=nltk_data_path)
+nltk.download('wordnet', download_dir=nltk_data_path)
+nltk.download('omw-1.4', download_dir=nltk_data_path)
+
 
 # --- Streamlit config ---
 st.set_page_config(page_title="Find Similar Words", layout="centered")
