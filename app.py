@@ -6,6 +6,7 @@ from pathlib import Path
 from numpy.linalg import norm
 import random
 import nltk
+nltk.data.path.append("./nltk_data")
 from nltk.corpus import stopwords
 import os
 
@@ -84,8 +85,15 @@ def is_valid_word(word):
         word.lower() not in stop_words
     )
 
+
+from nltk.tag import PerceptronTagger
+
+# Load the tagger from the local pickle file
+tagger = PerceptronTagger(load=False)
+tagger.load("nltk_data/taggers/averaged_perceptron_tagger_en/averaged_perceptron_tagger.pickle")
+
 def get_pos_tag(word):
-    tag = nltk.pos_tag([word])[0][1]
+    tag = tagger.tag([word])[0][1]
     return {
         'NN': 'noun',
         'NNS': 'plural noun',
@@ -102,6 +110,7 @@ def get_pos_tag(word):
         'RBR': 'comparative adv',
         'RBS': 'superlative adv'
     }.get(tag, tag)
+
 
 def get_similar_words(word, embeddings, top_n=5):
     if word not in embeddings:
