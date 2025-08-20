@@ -75,14 +75,20 @@ if st.session_state.get("first_load"):
     st.rerun()
 
 # --- Helper functions ---
-# --- Custom POS tagger loading ---
+
 from nltk.tag import PerceptronTagger
 
-# Get the full absolute path to the tagger pickle file
-tagger_path = Path(__file__).parent / "nltk_data" / "taggers" / "averaged_perceptron_tagger_en" / "averaged_perceptron_tagger.pickle"
+# Use absolute path to file (Streamlit Cloud-safe)
+base_path = Path(__file__).resolve().parent
+tagger_path = base_path / "nltk_data" / "taggers" / "averaged_perceptron_tagger_en" / "averaged_perceptron_tagger.pickle"
 
 tagger = PerceptronTagger(load=False)
-tagger.load(str(tagger_path))
+
+if tagger_path.exists():
+    tagger.load(str(tagger_path))
+else:
+    raise FileNotFoundError(f"Tagger file not found at: {tagger_path}")
+
 
 
 def cosine_similarity(v1, v2):
